@@ -87,4 +87,4 @@ public class BuzzDataController {
 		return new ResponseEntity<String>(data, HttpStatus.OK);
 	}
 
-}
+} 
