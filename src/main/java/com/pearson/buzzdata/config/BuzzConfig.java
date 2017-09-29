@@ -9,4 +9,4 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class BuzzConfig {
 	
 	
-}
+} 
