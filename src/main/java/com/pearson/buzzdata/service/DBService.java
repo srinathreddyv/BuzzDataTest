@@ -12,11 +12,34 @@ import org.springframework.stereotype.Component;
 
 import com.pearson.buzzdata.domain.DBConnection;
 import com.pearson.buzzdata.model.Enrollment;
+import com.pearson.buzzdata.model.User;
+import com.pearson.buzzdata.model.UserResponse;
 
 @Component
 public class DBService {
 
-	public void insertData(Enrollment enr) throws ClassNotFoundException,
+	
+	public void insertUserData(User user) throws ClassNotFoundException, URISyntaxException, SQLException{
+		
+		Connection con = null;
+
+		con = DBConnection.getConnection();
+
+		String insertQuery = "INSERT INTO USERDATA(BUZZID, SALESFORCEID)"
+				+ "VALUES" + " (?,?)";
+
+		PreparedStatement preparedStatement = null;
+
+		preparedStatement = con.prepareStatement(insertQuery);
+		preparedStatement.setString(1, user.getId());
+		preparedStatement.setString(2, user.getReference());
+		
+		preparedStatement.executeUpdate();
+
+		con.close();
+		
+	}
+	public void insertEnrollmentData(Enrollment enr) throws ClassNotFoundException,
 			URISyntaxException, SQLException {
 		// TODO Auto-generated method stub
 
@@ -71,6 +94,27 @@ public class DBService {
 		ResultSet rs = preparedStatement.executeQuery();
 		while(rs.next()){
 			String id = rs.getString("ID");
+			idList.add(id);
+		}
+		con.close();
+		
+		return idList;
+	}
+	
+	public List<String> getUserDetails() throws ClassNotFoundException, URISyntaxException, SQLException{
+		Connection con = null;
+		List<String> idList = new ArrayList<>();
+		con = DBConnection.getConnection();
+		
+		String query = "SELECT * FROM USERDATA";
+		
+		PreparedStatement preparedStatement = null;
+
+		preparedStatement = con.prepareStatement(query);
+		
+		ResultSet rs = preparedStatement.executeQuery();
+		while(rs.next()){
+			String id = rs.getString("BUZZID");
 			idList.add(id);
 		}
 		con.close();

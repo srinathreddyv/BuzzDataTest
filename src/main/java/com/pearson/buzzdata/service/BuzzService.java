@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import com.pearson.buzzdata.model.Enrollment;
 import com.pearson.buzzdata.model.EnrollmentResponse;
 import com.pearson.buzzdata.model.ResponseModel;
+import com.pearson.buzzdata.model.User;
+import com.pearson.buzzdata.model.UserResponse;
 
 @Component
 public class BuzzService {
@@ -25,27 +27,41 @@ public class BuzzService {
 		boolean res = false;
 		ResponseModel response = null;
 		EnrollmentResponse enrResponse = null;
+		UserResponse userResponse = null;
 		List<String> idList = null;
 		try {
 			response = apiDataService.login();
 			if (response != null) {
 				enrResponse = apiDataService.getEnrollmentData(response);
+				userResponse = apiDataService.getUsersDetails(response);
 			}
 			if (enrResponse != null) {
 				System.out.println("enrollment data fetched");
 				idList = dbService.getDetails();
-				if (idList != null) {
-					System.out.println("Id list populated "+idList.toString());
-					for (Enrollment enr : enrResponse.getResponse()
-							.getEnrollments().getEnrollment()) {
-						
-						if(!idList.contains(enr.getId())){
-							System.out.println("Inserting data for id:"+enr.getId());
-							dbService.insertData(enr);
-							res = true;
-						}
+				System.out.println("Id list populated " + idList.toString());
+				for (Enrollment enr : enrResponse.getResponse()
+						.getEnrollments().getEnrollment()) {
+
+					if (!idList.contains(enr.getId())) {
+						System.out.println("Inserting data for id:"
+								+ enr.getId());
+						dbService.insertEnrollmentData(enr);
+						res = true;
 					}
 				}
+
+			}
+
+			if (userResponse != null) {
+				idList = dbService.getUserDetails();
+				for (User user : userResponse.getResponse().getUsers()
+						.getUser()) {
+					if (!idList.contains(user.getId())) {
+						dbService.insertUserData(user);
+						res = true;
+					}
+				}
+
 			}
 
 		} catch (IOException | ClassNotFoundException | URISyntaxException

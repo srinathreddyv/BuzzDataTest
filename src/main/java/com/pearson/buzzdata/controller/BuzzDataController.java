@@ -26,4 +26,7 @@ public class BuzzDataController {
 		else
 			return new  ResponseEntity<>("Records already exists",HttpStatus.OK);
 	}
+	
 } 
+
+

@@ -17,6 +17,7 @@ import com.pearson.buzzdata.model.EnrollmentResponse;
 import com.pearson.buzzdata.model.RequestModel;
 import com.pearson.buzzdata.model.RequestObject;
 import com.pearson.buzzdata.model.ResponseModel;
+import com.pearson.buzzdata.model.UserResponse;
 
 @Component
 public class APIDataService {
@@ -81,5 +82,28 @@ public class APIDataService {
 				EnrollmentResponse.class);
 		
 		return enrolmentResponse;
+	}
+	
+	public UserResponse getUsersDetails(ResponseModel loginResponse) throws JsonParseException, JsonMappingException, IOException{
+		
+		String token = loginResponse.getResponse().getUser().getToken();
+		String domainId = loginResponse.getResponse().getUser().getDomainid();
+
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders header = new HttpHeaders();
+		header.set("Cookie", "AZT=" + token);
+		header.set("Accept", "application/json");
+		HttpEntity<String> httpentity = new HttpEntity<String>(header);
+
+		String userUrl = url + "?cmd=listusers&domainid=" + domainId;
+		ResponseEntity<String> userData = restTemplate.exchange(userUrl,
+				HttpMethod.GET, httpentity, String.class);
+		String data = userData.getBody().toString();
+		ObjectMapper mapper = new ObjectMapper();
+		System.out.println(data);
+		UserResponse userResponse = mapper.readValue(data,
+				UserResponse.class);
+		
+		return userResponse;
 	}
 }
